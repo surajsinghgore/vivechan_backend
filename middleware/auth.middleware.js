@@ -27,7 +27,15 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
     next();
   } catch (error) {
     // Handle errors related to token verification or user retrieval
-    const errorMessage = error instanceof jwt.JsonWebTokenError ? "Invalid access token" : error.message || "Unauthorized request";
-    throw new ApiError(401, errorMessage);
+    if (error instanceof jwt.TokenExpiredError) {
+      // Handle token expiration
+      throw new ApiError(401, "Token has expired");
+    }
+    if (error instanceof jwt.JsonWebTokenError) {
+      // Handle invalid token errors
+      throw new ApiError(401, "Invalid access token");
+    }
+    // Handle other errors
+    throw new ApiError(401, error.message || "Unauthorized request");
   }
 });
