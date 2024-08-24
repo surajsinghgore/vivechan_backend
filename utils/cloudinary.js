@@ -1,5 +1,4 @@
-import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
+import cloudinary from "cloudinary";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -7,21 +6,14 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+export const uploadOnCloudinary = async (filePath) => {
   try {
-    if (!localFilePath) return null;
-    //upload the file on cloudinary
-    const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto",
+    const result = await cloudinary.v2.uploader.upload(filePath, {
+      folder: "vivechan",
     });
-    // file has been uploaded successfull
-    //console.log("file is uploaded on cloudinary ", response.url);
-    fs.unlinkSync(localFilePath);
-    return response;
+    return result;
   } catch (error) {
-    fs.unlinkSync(localFilePath); // remove the locally saved temporary file as the upload operation got failed
+    console.error("Error uploading to Cloudinary:", error);
     return null;
   }
 };
-
-export { uploadOnCloudinary };
