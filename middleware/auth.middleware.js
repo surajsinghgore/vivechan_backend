@@ -14,9 +14,8 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
 
     // Verify the token
     const decodedToken = jwt.verify(token, process.env.JWT_TOKEN_KEY);
-
     // Retrieve user from the database
-    const user = await User.findById(decodedToken?._id).select("-password");
+    const user = await User.findById(decodedToken?.userId).select("-password");
 
     if (!user) {
       throw new ApiError(401, "Unauthorized request: User not found");

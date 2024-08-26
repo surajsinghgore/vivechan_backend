@@ -35,10 +35,18 @@ const loginUserHandler = async (req, res, next) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ userId: user._id, username: user.username, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
+    const token = jwt.sign(
+      { userId: user._id, username: user.username, email: user.email },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRATION }
+    );
+
+    // Manually remove the password field from the user object
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
 
     // Return success response
-    return res.status(200).json(new ApiResponse(200, { token, user }, "Login successful"));
+    return res.status(200).json(new ApiResponse(200, { token, user: userWithoutPassword }, "Login successful"));
   } catch (error) {
     next(error);
   }
