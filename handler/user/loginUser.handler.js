@@ -8,10 +8,10 @@ const JWT_EXPIRATION = process.env.JWT_TOKEN_EXPIRY;
 
 const loginUserHandler = async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, password } = req.body;
 
     // Validate request
-    if (!username && !email) {
+    if (!username ) {
       throw new ApiError(400, "Username or email is required");
     }
     if (!password) {
@@ -20,9 +20,8 @@ const loginUserHandler = async (req, res, next) => {
 
     // Find user by username or email
     const user = await User.findOne({
-      $or: [{ username }, { email }],
+      $or: [{ username }, { email:username }],
     });
-
     if (!user) {
       throw new ApiError(401, "Invalid username or email");
     }
